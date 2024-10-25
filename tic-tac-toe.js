@@ -2,6 +2,25 @@ document.addEventListener("DOMContentLoaded", function() {
     const squares = document.querySelectorAll(".square"); // Select all square divs
     let currentPlayer = "X"; // Start with player X
     const gameState = Array(9).fill(null); // Initialize game state array
+    const statusDiv = document.getElementById("status"); // Get status div
+
+    // Winning combinations
+    const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontal
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Vertical
+        [0, 4, 8], [2, 4, 6] // Diagonal
+    ];
+
+    // Function to check for a winner
+    function checkWinner() {
+        for (const combination of winningCombinations) {
+            const [a, b, c] = combination;
+            if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                return gameState[a]; // Return winner (X or O)
+            }
+        }
+        return null; // No winner
+    }
 
     // Add the click event listener to each square
     squares.forEach((square, index) => {
@@ -12,8 +31,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 square.textContent = currentPlayer; // Set the text to X or O
                 square.classList.add(currentPlayer); // Add class for styling
 
-                // Switch player
-                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                // Check for a winner
+                const winner = checkWinner();
+                if (winner) {
+                    statusDiv.textContent = `Congratulations! ${winner} is the Winner!`; // Update status
+                    statusDiv.classList.add("you-won"); // Add class to status div
+                    squares.forEach(s => s.style.pointerEvents = 'none'); // Disable further clicks
+                } else {
+                    // Switch player
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+                }
             }
         });
 
